@@ -3,6 +3,15 @@ const router = express.Router();
 const livroController = require('../controllers/livroController');
 const multaController = require('../controllers/multaController');
 const clienteController = require('../controllers/clienteController');
+const authMiddleware = require('../middleware/authMiddleware');
+const authRoutes = require('./authRoutes');
+const passwordRoutes = require('./passwordRoutes');
+
+// Usar rotas de recuperação de senha
+router.use('/senha', passwordRoutes);
+
+// Usar rotas de autenticação
+router.use('/auth', authRoutes);
 
 // LIVROS
 
@@ -29,6 +38,12 @@ router.post('/clientes', clienteController.adicionarCliente);
 
 // Rota para listar clientes
 router.get('/clientes', clienteController.listarClientes);
+
+// Rota protegida para atualizar informações do cliente
+router.put('/clientes/:id', authMiddleware, clienteController.updateCliente);
+
+// Rota para excluir um cliente
+router.delete('/clientes/:id', authMiddleware, clienteController.deleteCliente);
 
 
 

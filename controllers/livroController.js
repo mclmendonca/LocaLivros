@@ -45,26 +45,25 @@ exports.createLivro = (req, res) => {
 
 // Atualizar livro existente
 exports.updateLivro = (req, res) => {
-  const id = parseInt(req.params.id);
-  const { titulo, autor, genero, quantidadeEmEstoque } = req.body;
-  db.query(
-      'UPDATE livros SET titulo = ?, autor = ?, genero = ?, quantidade_em_estoque = ? WHERE id = ?',
-      [titulo, autor, genero, quantidadeEmEstoque, id],
-      (err, results) => {
-          if (err) {
-              console.error('Erro ao atualizar livro:', err); // Adicione este log para depuração
-              res.status(500).json({ message: 'Erro ao atualizar livro' });
-              return;
-          }
-          if (results.affectedRows > 0) {
-              res.json({ id, titulo, autor, genero, quantidadeEmEstoque });
-          } else {
-              res.status(404).json({ message: 'Livro não encontrado' });
-          }
-      }
-  );
+    const id = parseInt(req.params.id);
+    const { titulo, autor, genero, quantidadeEmEstoque } = req.body;
+    db.query(
+        'UPDATE livros SET titulo = ?, autor = ?, genero = ?, quantidade_em_estoque = ? WHERE id = ?',
+        [titulo, autor, genero, quantidadeEmEstoque, id],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao atualizar livro:', err);
+                res.status(500).json({ message: 'Erro ao atualizar livro' });
+                return;
+            }
+            if (results.affectedRows > 0) {
+                res.json({ id, titulo, autor, genero, quantidadeEmEstoque });
+            } else {
+                res.status(404).json({ message: 'Livro não encontrado' });
+            }
+        }
+    );
 };
-
 
 // Excluir livro
 exports.deleteLivro = (req, res) => {
@@ -79,6 +78,5 @@ exports.deleteLivro = (req, res) => {
         } else {
             res.status(404).json({ message: 'Livro não encontrado' });
         }
-        
     });
 };
