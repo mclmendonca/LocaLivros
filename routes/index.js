@@ -15,50 +15,49 @@ router.use('/auth', authRoutes);
 
 // LIVROS
 
-// Rota visualizar os livros
+// Rota visualizar os livros (não precisa de autenticação)
 router.get('/livros', livroController.getLivros);
 
-// Rota para ver um livro específico pelo ID
+// Rota para ver um livro específico pelo ID (acesso público)
 router.get('/livros/:id', livroController.getLivroById);
 
-// Rota para ADD um livro
-router.post('/livros', livroController.createLivro);
+// Rota para ADD um livro (protegida por autenticação)
+router.post('/livros', authMiddleware, livroController.createLivro);
 
-// Rota para Alterar um livro
-router.put('/livros/:id', livroController.updateLivro);
+// Rota para Alterar um livro (protegida por autenticação)
+router.put('/livros/:id', authMiddleware, livroController.updateLivro);
 
-// Rota para excluir um livro
-router.delete('/livros/:id', livroController.deleteLivro);
+// Rota para excluir um livro (protegida por autenticação)
+router.delete('/livros/:id', authMiddleware, livroController.deleteLivro);
 
 
 // CLIENTE
 
-// Rota para ADD um cliente
+// Rota para ADD um cliente (geralmente pública, para registrar novos clientes)
 router.post('/clientes', clienteController.adicionarCliente);
 
-// Rota para listar clientes
-router.get('/clientes', clienteController.listarClientes);
+// Rota para listar clientes (talvez essa deva ser restrita apenas para administradores)
+router.get('/clientes', authMiddleware, clienteController.listarClientes);
 
 // Rota protegida para atualizar informações do cliente
 router.put('/clientes/:id', authMiddleware, clienteController.updateCliente);
 
-// Rota para excluir um cliente
+// Rota para excluir um cliente (apenas administradores deveriam poder fazer isso)
 router.delete('/clientes/:id', authMiddleware, clienteController.deleteCliente);
 
 
+// MULTAS
 
-// Rota para adicionar uma multa
-router.post('/multas', multaController.adicionarMulta);
+// Rota para adicionar uma multa (protegida)
+router.post('/multas', authMiddleware, multaController.adicionarMulta);
 
-// Rota para pagar uma multa
-router.put('/multas/:id/pagar', multaController.pagarMulta);
+// Rota para pagar uma multa (pode ser pública, mas é necessário autenticar)
+router.put('/multas/:id/pagar', authMiddleware, multaController.pagarMulta);
 
-// Rota para listar multas pendentes
-router.get('/multas/pendentes', multaController.listarMultasPendentes);
+// Rota para listar multas pendentes (proteção sugerida)
+router.get('/multas/pendentes', authMiddleware, multaController.listarMultasPendentes);
 
-// Rota para listar multas pagas
-router.get('/multas/pagas', multaController.listarMultasPagas); 
-
+// Rota para listar multas pagas (proteção sugerida)
+router.get('/multas/pagas', authMiddleware, multaController.listarMultasPagas);
 
 module.exports = router;
-
