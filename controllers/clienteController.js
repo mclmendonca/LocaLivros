@@ -1,72 +1,76 @@
-const db = require('../db');
+const bcrypt = require('bcryptjs'); // Certifique-se de importar bcrypt no início do seu arquivo
 
-// Adicionar cliente (Aluno ou Professor)
+
 exports.adicionarCliente = (req, res) => {
     const { nome, email, senha, tipo, curso_departamento } = req.body;
 
-    db.query(
-        'INSERT INTO clientes (nome, email, senha, tipo, curso_departamento) VALUES (?, ?, ?, ?, ?)',
-        [nome, email, senha, tipo, curso_departamento],
-        (err, results) => {
-            if (err) {
-                console.error('Erro ao adicionar cliente:', err);
-                res.status(500).json({ message: 'Erro ao adicionar cliente' });
-            } else {
-                res.status(201).json({ message: 'Cliente adicionado com sucesso' });
-            }
+    // Criptografar a senha
+    bcrypt.hash(senha, 10, (err, hashedPassword) => {
+        if (err) {
+            console.error('Erro ao criptografar a senha:', err);
+            return res.status(500).json({ message: 'Erro ao adicionar cliente' });
         }
-    );
+
+        db.query(
+            'INSERT INTO clientes (nome, email, senha, tipo, curso_departamento) VALUES (?, ?, ?, ?, ?)',
+            [nome, email, hashedPassword, tipo, curso_departamento], // senha criptografada
+            (err, results) => {
+                if (err) {
+                    console.error('Erro ao adicionar cliente:', err);
+                    res.status(500).json({ message: 'Erro ao adicionar cliente' });
+                } else {
+                    res.status(201).json({ message: 'Cliente adicionado com sucesso' });
+                }
+            }
+        );
+    });
 };
+
 
 // Listar todos os clientes
 exports.listarClientes = (req, res) => {
     db.query('SELECT * FROM clientes', (err, results) => {
         if (err) {
             console.error('Erro ao listar clientes:', err);
-            res.status(500).json({ message: 'Erro ao listar clientes' });
-        } else {
-            res.json(results);
+            return res.status(500).json({ message: 'Erro ao listar clientes' });
         }
+        res.status(200).json(results);
     });
 };
 
-// Atualizar cliente existente
+// Atualizar informações do cliente
 exports.updateCliente = (req, res) => {
-    const id = parseInt(req.params.id);
-    const { nome, email, senha, tipo, curso_departamento } = req.body;
+    const { id } = req.params;
+    const { nome, email, tipo, curso_departamento } = req.body;
 
     db.query(
-        'UPDATE clientes SET nome = ?, email = ?, senha = ?, tipo = ?, curso_departamento = ? WHERE id = ?',
-        [nome, email, senha, tipo, curso_departamento, id],
+        'UPDATE clientes SET nome = ?, email = ?, tipo = ?, curso_departamento = ? WHERE id = ?',
+        [nome, email, tipo, curso_departamento, id],
         (err, results) => {
             if (err) {
                 console.error('Erro ao atualizar cliente:', err);
-                res.status(500).json({ message: 'Erro ao atualizar cliente' });
-                return;
+                return res.status(500).json({ message: 'Erro ao atualizar cliente' });
             }
-            if (results.affectedRows > 0) {
-                res.json({ id, nome, email, tipo, curso_departamento });
-            } else {
-                res.status(404).json({ message: 'Cliente não encontrado' });
+            if (results.affectedRows === 0) {
+                return res.status(404).json({ message: 'Cliente não encontrado' });
             }
+            res.status(200).json({ message: 'Cliente atualizado com sucesso' });
         }
     );
 };
 
-// Excluir cliente
+// Excluir um cliente
 exports.deleteCliente = (req, res) => {
-    const id = parseInt(req.params.id);
+    const { id } = req.params;
+
     db.query('DELETE FROM clientes WHERE id = ?', [id], (err, results) => {
         if (err) {
             console.error('Erro ao excluir cliente:', err);
-            res.status(500).json({ message: 'Erro ao excluir cliente' });
-            return;
+            return res.status(500).json({ message: 'Erro ao excluir cliente' });
         }
-        if (results.affectedRows > 0) {
-            res.status(204).send(); // Resposta com código 204 (No Content) para exclusão bem-sucedida
-        } else {
-            res.status(404).json({ message: 'Cliente não encontrado' });
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ message: 'Cliente não encontrado' });
         }
+        res.status(200).json({ message: 'Cliente excluído com sucesso' });
     });
 };
-

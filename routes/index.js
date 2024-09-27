@@ -34,7 +34,7 @@ router.delete('/livros/:id', authMiddleware, livroController.deleteLivro);
 // CLIENTE
 
 // Rota para ADD um cliente (geralmente pública, para registrar novos clientes)
-router.post('/clientes', clienteController.adicionarCliente);
+router.post('/clientes', authMiddleware, clienteController.adicionarCliente);
 
 // Rota para listar clientes (talvez essa deva ser restrita apenas para administradores)
 router.get('/clientes', authMiddleware, clienteController.listarClientes);

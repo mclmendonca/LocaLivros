@@ -6,7 +6,7 @@ const expect = chai.expect;
 describe('ClienteController - Operações com Clientes', () => {
   it('Deve adicionar um cliente com sucesso', (done) => {
       request(server)
-          .post('/clientes')
+          .post('/api/clientes')
           .send({
               nome: 'Cliente Teste',
               email: 'cliente@exemplo.com',
@@ -22,7 +22,7 @@ describe('ClienteController - Operações com Clientes', () => {
 it('Deve atualizar informações de um cliente', (done) => {
   const token = 'token-valido';
   request(server)
-      .put('/clientes/1')
+      .put('/api/clientes/1')
       .set('Authorization', `Bearer ${token}`)
       .send({ nome: 'Cliente Atualizado' })
       .expect(200)

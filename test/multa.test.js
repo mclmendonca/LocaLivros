@@ -8,7 +8,7 @@ describe('MultaController - Operações com Multas', function() {
 
   it('Deve adicionar uma multa com sucesso', (done) => {
       request(server)
-          .post('/multas')
+          .post('/api/multas')
           .send({
               idCliente: 1,
               valor: 50.0,

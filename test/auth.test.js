@@ -7,7 +7,7 @@ describe('AuthController - Login', () => {
   
     it('Deve realizar login com sucesso e retornar um token', (done) => {
         request(server)
-            .post('/auth/login')
+            .post('/api/auth/login')
             .send({ email: 'usuario@exemplo.com', senha: 'senha123' })
             .expect(200)
             .then((res) => {
@@ -19,7 +19,7 @@ describe('AuthController - Login', () => {
 
     it('Deve retornar erro 401 para credenciais inválidas', (done) => {
         request(server)
-            .post('/auth/login')
+            .post('/api/auth/login')
             .send({ email: 'usuario@exemplo.com', senha: 'senhaErrada' })
             .expect(401)
             .then((res) => {
@@ -30,7 +30,7 @@ describe('AuthController - Login', () => {
 
     it('Deve acessar rota protegida com token válido', (done) => {
         request(server)
-            .post('/auth/login')
+            .post('/api/auth/login')
             .send({ email: 'usuario@exemplo.com', senha: 'senha123' })
             .then((res) => {
                 const token = res.body.token;
